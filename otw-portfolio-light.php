@@ -396,27 +396,32 @@ add_image_size('otw-porfolio-large', get_option('otw_pfl_img_size_w', '700'), ge
 /*-----------------------------------------------------------------------------------*/
 /* Portfolio template files - POST and ARCHIVE                                       */
 /*-----------------------------------------------------------------------------------*/
-add_action( 'template_redirect', 'otw_template_redirect_def' ); // add template for single gallery page
-if ( ! function_exists( 'otw_template_redirect_def' ) ) {
-	function otw_template_redirect_def() {
-		global $wp_query, $post, $posts;
-		if( 'otw-portfolio' == get_post_type() && "" == $wp_query->query_vars["s"] && ! isset( $wp_query->query_vars["otw-portfolio-category"] ) ) {
-              if ( file_exists( get_template_directory().'/otw-portfolio-post.php' )) {
-                  include( get_template_directory().'/otw-portfolio-post.php' );
-              } else {
-                  include( plugin_dir_path( __FILE__ ).'templates/otw-portfolio-post.php' );
-              }
-			exit();
-		}
-		else if( 'otw-portfolio' == get_post_type() && isset( $wp_query->query_vars["otw-portfolio-category"] ) ) {
-              if ( file_exists( get_template_directory().'/otw-portfolio-paginated.php' )) {
-                  include( get_template_directory().'/otw-portfolio-paginated.php' );
-              } else {
-                  include( plugin_dir_path( __FILE__ ).'templates/otw-portfolio-paginated.php' );
-              }
-			exit();
-		}
-	}
+add_action( 'template_redirect', 'otw_template_redirect' );
+function otw_template_redirect() {
+    global $post;
+
+    $child_theme_dir = get_stylesheet_directory();
+    $theme_dir = get_template_directory();
+
+    if (strpos($post->post_content, 'otw_portfolio') && strpos($post->post_content, 'otw_filterable') )  {
+      if ( file_exists( $child_theme_dir . '/otw-portfolio-filterable.php' )) {
+          include( $child_theme_dir . '/otw-portfolio-filterable.php' );
+      } elseif ( file_exists( $theme_dir . '/otw-portfolio-filterable.php' )) {
+          include( $theme_dir . '/otw-portfolio-filterable.php' );
+      } else {
+          include( plugin_dir_path( __FILE__ ).'templates/otw-portfolio-filterable.php' );
+      }
+      exit();
+    } else if ( strpos($post->post_content, 'otw_portfolio') )  {
+      if ( file_exists( $child_theme_dir . '/otw-portfolio-paginated.php' )) {
+          include( $child_theme_dir . '/otw-portfolio-paginated.php' );
+      } elseif ( file_exists( $theme_dir . '/otw-portfolio-paginated.php' )) {
+          include( $theme_dir . '/otw-portfolio-paginated.php' );
+      } else {
+          include( plugin_dir_path( __FILE__ ).'templates/otw-portfolio-paginated.php' );
+      }
+      exit();
+    }
 }
 
 
